@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journey Clips - Wiki Engine</title>
+    <style>
+        :root {
+            --bg-color: #fdfbf7;
+            --text-black: #0d0d0d;
+            --accent-yellow: #d4a373;
+            --accent-red: #c91818;
+            --border-black: #1a1a1a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-black);
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            top: 0px !important;
+        }
+
+        .goog-te-banner-frame.skiptranslate, 
+        .goog-te-banner-frame,
+        .skiptranslate > iframe,
+        #goog-gt-tt, 
+        .goog-te-balloon-text,
+        .goog-tooltip,
+        .goog-tooltip:hover {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        .goog-logo-link, 
+        .goog-te-gadget span, 
+        .goog-te-gadget-icon {
+            display: none !important;
+        }
+
+        .goog-te-gadget {
+            color: transparent !important;
+            font-size: 0px !important;
+        }
+
+        .top-bar {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 99999;
+        }
+
+        #google_translate_element {
+            display: inline-block !important;
+            border: 2px solid var(--border-black);
+            padding: 2px 5px;
+            background: #ffffff;
+            box-shadow: 2px 2px 0px var(--border-black);
+        }
+
+        .goog-te-combo {
+            font-family: 'Courier New', Courier, monospace !important;
+            font-size: 12px !important;
+            font-weight: bold;
+            border: none !important;
+            background: #fff !important;
+            color: var(--text-black) !important;
+            padding: 3px 5px !important;
+            outline: none !important;
+            cursor: pointer;
+        }
+
+        .main-content {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .title .brand-main {
+            text-decoration: underline;
+            color: var(--text-black);
+        }
+
+        .title .brand-sub {
+            color: var(--accent-red);
+            border-bottom: 2px solid var(--accent-yellow);
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .search-container {
+            width: 100%;
+            display: flex;
+            border: 2px solid var(--border-black);
+            background-color: #ffffff;
+            box-shadow: 2px 2px 0px var(--border-black);
+        }
+
+        .search-container input {
+            flex-grow: 1;
+            padding: 10px 12px;
+            border: none;
+            outline: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            background: transparent;
+            color: var(--text-black);
+        }
+
+        .search-container input::placeholder {
+            color: #888888;
+        }
+
+        .search-container button {
+            padding: 10px 15px;
+            border: none;
+            border-left: 2px solid var(--border-black);
+            background: transparent;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--accent-red);
+            transition: all 0.2s ease;
+        }
+
+        .search-container button:hover {
+            background-color: var(--accent-yellow);
+            color: var(--text-black);
+        }
+
+        .post-counter {
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--text-black);
+            border: 2px solid var(--border-black);
+            background: #ffffff;
+            padding: 6px 8px;
+            box-shadow: 2px 2px 0px var(--border-black);
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .suggestions-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border: 2px solid var(--border-black);
+            border-top: none;
+            box-shadow: 2px 4px 0px var(--border-black);
+            z-index: 999;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 10px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            border-bottom: 1px dashed var(--border-black);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--accent-yellow);
+        }
+
+        .tags-container {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+            margin-bottom: 25px;
+        }
+
+        .tag-link {
+            color: var(--accent-red);
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .tag-link:hover {
+            color: var(--text-black);
+            text-decoration: underline;
+        }
+
+        #redirectPage {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            z-index: 9999;
+            overflow-y: auto;
+            padding: 30px 15px;
+            box-sizing: border-box;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .redirect-wrapper {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .back-btn-redirect {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 12px;
+            border: 2px solid var(--border-black);
+            background-color: #fff;
+            color: var(--accent-red);
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px var(--border-black);
+        }
+
+        .back-btn-redirect:hover {
+            background-color: var(--accent-yellow);
+            color: var(--text-black);
+        }
+
+        .post-title-header {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-red);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--border-black);
+            padding-bottom: 8px;
+        }
+
+        .article-card {
+            padding: 10px 0;
+            width: 100%;
+        }
+
+        .article-card h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: var(--accent-red);
+            cursor: pointer;
+        }
+
+        .article-card h2:hover {
+            text-decoration: underline;
+        }
+
+        .article-body {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-black);
+        }
+
+        /* Image styling for loaded posts */
+        .article-body img {
+            max-width: 100% !important;
+            height: auto !important;
+            border: 2px solid var(--border-black);
+            box-shadow: 3px 3px 0px var(--border-black);
+            margin: 15px 0;
+            display: block;
+        }
+
+        .status-msg {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-box {
+            background: #ffffff;
+            border: 3px solid var(--border-black);
+            box-shadow: 5px 5px 0px var(--border-black);
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal-box h3 {
+            font-size: 18px;
+            color: var(--accent-red);
+            margin-bottom: 12px;
+        }
+
+        .modal-box p {
+            font-size: 13px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .modal-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid var(--border-black);
+            background: #ffffff;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px var(--border-black);
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn:hover {
+            background-color: var(--accent-yellow);
+        }
+
+        .modal-btn.active {
+            background-color: var(--accent-red);
+            color: #ffffff;
+        }
+
+        .modal-close-btn {
+            background: #eee;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div id="google_translate_element"></div>
+    </div>
+
+    <div class="main-content" id="landingPage">
+        <h1 class="title" id="brandTitle">
+            <span class="brand-main">JOURNEY</span> <span class="brand-sub">CLIPS</span>
+        </h1>
+
+        <div class="search-wrapper">
+            <div class="search-container">
+                <input id="searchInput" placeholder="Type topic here..." type="text" autocomplete="off" oninput="showSuggestions()">
+                <button onclick="triggerRedirectSearch()">[ SEARCH ]</button>
+            </div>
+            <div id="suggestionsBox" class="suggestions-box"></div>
+        </div>
+
+        <div class="post-counter" id="postCounterBadge">[ POSTS LOADED: 0 ]</div>
+
+        <div class="tags-container" id="tagsArea">
+            <span class="status-msg">Loading initial posts...</span>
+        </div>
+    </div>
+
+    <div id="redirectPage">
+        <div class="redirect-wrapper">
+            <div class="back-btn-redirect" onclick="closeRedirectPage()">&lt; [ BACK TO SEARCH ]</div>
+            <div id="redirectPostTitle" class="post-title-header" style="display:none;"></div>
+            <div class="results-wrapper" id="resultsContainer"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="wikiModal">
+        <div class="modal-box">
+            <h3>SETTINGS / EXTENSIONS</h3>
+            <p id="wikiStatusText">Wikipedia Integration: DISABLED</p>
+            <button class="modal-btn" id="wikiToggleBtn" onclick="toggleWikipedia()">[ CONNECT WITH WIKIPEDIA ]</button>
+            <button class="modal-btn modal-close-btn" onclick="closeModal()">[ CLOSE ]</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'hi,en,es,ru,fr,de,ar,ja,zh-CN',
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <script>
+        var blogPosts = [];
+        var tagsSet = new Set();
+        var blogDomain = "https://anything-data.blogspot.com";
+        var startIndex = 1;
+        var batchSize = 150; // Har batch me 150 posts
+        var isWikiEnabled = false;
+        var isLoading = false;
+
+        window.onload = function() {
+            fetchNextBatch(); // Auto-fetch initial posts
+
+            document.getElementById("searchInput").addEventListener("keyup", function(e) {
+                if (e.key === "Enter") {
+                    hideSuggestions();
+                    triggerRedirectSearch();
+                }
+            });
+
+            document.addEventListener("click", function(e) {
+                if (!e.target.closest('.search-wrapper')) {
+                    hideSuggestions();
+                }
+            });
+
+            var brandTitle = document.getElementById("brandTitle");
+            var clickTimer = null;
+            var lastTap = 0;
+
+            brandTitle.addEventListener("click", function() {
+                if (clickTimer == null) {
+                    clickTimer = setTimeout(function() {
+                        clickTimer = null;
+                        resetSearch();
+                    }, 300);
+                } else {
+                    clearTimeout(clickTimer);
+                    clickTimer = null;
+                    openModal();
+                }
+            });
+
+            brandTitle.addEventListener("touchend", function(e) {
+                var currentTime = new Date().getTime();
+                var tapLength = currentTime - lastTap;
+                if (tapLength < 300 && tapLength > 0) {
+                    if (clickTimer) clearTimeout(clickTimer);
+                    openModal();
+                    e.preventDefault();
+                }
+                lastTap = currentTime;
+            });
+        };
+
+        function openModal() {
+            document.getElementById("wikiModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("wikiModal").style.display = "none";
+        }
+
+        function toggleWikipedia() {
+            isWikiEnabled = !isWikiEnabled;
+            var btn = document.getElementById("wikiToggleBtn");
+            var status = document.getElementById("wikiStatusText");
+
+            if (isWikiEnabled) {
+                btn.innerText = "[ DISCONNECT WIKIPEDIA ]";
+                btn.classList.add("active");
+                status.innerText = "Wikipedia Integration: ENABLED (Searching both Blog & Wikipedia)";
+            } else {
+                btn.innerText = "[ CONNECT WITH WIKIPEDIA ]";
+                btn.classList.remove("active");
+                status.innerText = "Wikipedia Integration: DISABLED";
+            }
+        }
+
+        function fetchNextBatch() {
+            if (isLoading) return;
+            isLoading = true;
+
+            var script = document.createElement('script');
+            // Full content API feed endpoint (for rendering images and complete html)
+            script.src = blogDomain + '/feeds/posts/default?alt=json-in-script&start-index=' + startIndex + '&max-results=' + batchSize + '&callback=loadBlogData&_ts=' + new Date().getTime();
+            
+            script.onerror = function() {
+                isLoading = false;
+                // Auto-retry on network drop after 2s
+                setTimeout(fetchNextBatch, 2000);
+            };
+
+            document.body.appendChild(script);
+        }
+
+        function loadBlogData(data) {
+            var entries = data.feed ? (data.feed.entry || []) : [];
+            
+            entries.forEach(function(entry) {
+                var title = entry.title ? entry.title.$t : "";
+                // Get full HTML content (with images and markup)
+                var content = entry.content ? entry.content.$t : (entry.summary ? entry.summary.$t : "");
+                var categories = entry.category ? entry.category.map(function(c) { return c.term; }) : [];
+                
+                categories.forEach(function(tag) { tagsSet.add(tag); });
+
+                blogPosts.push({
+                    id: blogPosts.length,
+                    title: title,
+                    content: content,
+                    tags: categories
+                });
+            });
+
+            renderTags();
+
+            startIndex += batchSize;
+            isLoading = false;
+
+            // Continues automatic background batch fetching every 1 second
+            if (entries.length === batchSize) {
+                document.getElementById("postCounterBadge").innerText = "[ AUTO-LOADING... TOTAL LOADED: " + blogPosts.length + " ]";
+                setTimeout(function() {
+                    fetchNextBatch();
+                }, 1000);
+            } else {
+                document.getElementById("postCounterBadge").innerText = "[ ALL POSTS LOADED: " + blogPosts.length + " ]";
+            }
+        }
+
+        function renderTags() {
+            var tagsContainer = document.getElementById("tagsArea");
+            tagsContainer.innerHTML = "";
+            if (tagsSet.size === 0 && blogPosts.length === 0) {
+                tagsContainer.innerHTML = "<span class='status-msg'>No posts found in blog.</span>";
+                return;
+            }
+            tagsSet.forEach(function(tag) {
+                var tagSpan = document.createElement("span");
+                tagSpan.className = "tag-link";
+                tagSpan.innerText = "#" + tag;
+                tagSpan.onclick = function() {
+                    document.getElementById("searchInput").value = tag;
+                    triggerRedirectSearch();
+                };
+                tagsContainer.appendChild(tagSpan);
+            });
+        }
+
+        function showSuggestions() {
+            var val = document.getElementById("searchInput").value.toLowerCase().trim();
+            var box = document.getElementById("suggestionsBox");
+            box.innerHTML = "";
+
+            if (val === "") {
+                box.style.display = "none";
+                return;
+            }
+
+            var matches = blogPosts.filter(function(post) {
+                var titleMatch = post.title.toLowerCase().includes(val);
+                var tagMatch = post.tags.some(function(t) { return t.toLowerCase().includes(val); });
+                return titleMatch || tagMatch;
+            });
+
+            if (matches.length === 0) {
+                box.style.display = "none";
+                return;
+            }
+
+            matches.slice(0, 6).forEach(function(post) {
+                var item = document.createElement("div");
+                item.className = "suggestion-item";
+                item.innerText = post.title;
+                item.onclick = function() {
+                    document.getElementById("searchInput").value = post.title;
+                    hideSuggestions();
+                    openArticle(post.id);
+                };
+                box.appendChild(item);
+            });
+
+            box.style.display = "block";
+        }
+
+        function hideSuggestions() {
+            document.getElementById("suggestionsBox").style.display = "none";
+        }
+
+        function triggerRedirectSearch() {
+            hideSuggestions();
+            var q = document.getElementById("searchInput").value.toLowerCase().trim();
+            if (q === "") return;
+
+            var container = document.getElementById("resultsContainer");
+            var titleHeader = document.getElementById("redirectPostTitle");
+            container.innerHTML = "";
+
+            var results = blogPosts.filter(function(post) {
+                var inTitle = post.title.toLowerCase().includes(q);
+                var inContent = post.content.toLowerCase().includes(q);
+                var inTags = post.tags.some(function(t) { return t.toLowerCase().includes(q); });
+                return inTitle || inContent || inTags;
+            });
+
+            titleHeader.innerText = "SEARCH RESULTS FOR: " + q.toUpperCase();
+            titleHeader.style.display = "block";
+
+            if (results.length === 0 && !isWikiEnabled) {
+                container.innerHTML = "<div class='article-card'><p class='status-msg'>No local records found for '" + q + "'. Auto-loading remaining posts...</p></div>";
+            } else {
+                results.forEach(function(post) {
+                    var card = document.createElement("div");
+                    card.className = "article-card";
+                    card.innerHTML = "<h2 onclick='openArticle(" + post.id + ")'># " + post.title + "</h2>";
+                    container.appendChild(card);
+                });
+            }
+
+            if (isWikiEnabled) {
+                fetchWikipediaData(q);
+            }
+
+            document.getElementById("redirectPage").style.display = "flex";
+            window.location.hash = "search=" + encodeURIComponent(q);
+        }
+
+        function fetchWikipediaData(query) {
+            var container = document.getElementById("resultsContainer");
+            var wikiDiv = document.createElement("div");
+            wikiDiv.innerHTML = "<p class='status-msg'>Fetching Wikipedia results...</p>";
+            container.appendChild(wikiDiv);
+
+            fetch('https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(query) + '&format=json&origin=*')
+                .then(response => response.json())
+                .then(data => {
+                    wikiDiv.innerHTML = "<h3 style='margin-top:20px; border-bottom:1px solid #1a1a1a; padding-bottom:5px; color:var(--accent-red);'>WIKIPEDIA RESULTS:</h3>";
+                    if (!data.query || data.query.search.length === 0) {
+                        wikiDiv.innerHTML += "<p class='status-msg'>No Wikipedia articles found.</p>";
+                    } else {
+                        data.query.search.forEach(function(item) {
+                            var card = document.createElement("div");
+                            card.className = "article-card";
+                            card.innerHTML = "<h2>[WIKI] " + item.title + "</h2><p class='article-body'>" + item.snippet + "...</p>";
+                            card.onclick = function() {
+                                window.open("https://en.wikipedia.org/?curid=" + item.pageid, "_blank");
+                            };
+                            wikiDiv.appendChild(card);
+                        });
+                    }
+                })
+                .catch(err => {
+                    wikiDiv.innerHTML = "<p class='status-msg'>Error fetching Wikipedia data.</p>";
+                });
+        }
+
+        function openArticle(id) {
+            hideSuggestions();
+            var post = blogPosts.find(function(p) { return p.id === id; });
+            var container = document.getElementById("resultsContainer");
+            var titleHeader = document.getElementById("redirectPostTitle");
+
+            if (post) {
+                titleHeader.innerText = "# " + post.title;
+                titleHeader.style.display = "block";
+                container.innerHTML = "<div class='article-body'>" + post.content + "</div>";
+                document.getElementById("redirectPage").style.display = "flex";
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            }
+        }
+
+        function closeRedirectPage() {
+            document.getElementById("redirectPage").style.display = "none";
+            document.getElementById("searchInput").value = "";
+            document.getElementById("redirectPostTitle").style.display = "none";
+            window.location.hash = "";
+        }
+
+        function resetSearch() {
+            closeRedirectPage();
+        }
+    </script>
+</body>
+</html>
